@@ -98,7 +98,7 @@ CLaserOdometry2DNode::CLaserOdometry2DNode() :
     initial_robot_pose.pose.pose.position.x = 0;
     initial_robot_pose.pose.pose.position.y = 0;
     initial_robot_pose.pose.pose.position.z = 0;
-    initial_robot_pose.pose.pose.orientation.w = 0;
+    initial_robot_pose.pose.pose.orientation.w = 1;
     initial_robot_pose.pose.pose.orientation.x = 0;
     initial_robot_pose.pose.pose.orientation.y = 0;
     initial_robot_pose.pose.pose.orientation.z = 0;
@@ -170,7 +170,14 @@ void CLaserOdometry2DNode::process(const ros::TimerEvent&)
   }
   else
   {
-    ROS_WARN("Waiting for laser_scans....") ;
+    if (!is_initialized())
+    {
+        ROS_WARN("RF2O Not initialized.");
+    }
+    else
+    {
+        ROS_WARN("Waiting for laser_scans....") ;
+    }
   }
 }
 
