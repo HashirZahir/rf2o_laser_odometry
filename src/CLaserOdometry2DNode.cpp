@@ -43,6 +43,7 @@ public:
   std::string         laser_scan_topic;
   std::string         odom_topic;
   std::string         base_frame_id;
+  std::string         laser_frame_id;
   std::string         odom_frame_id;
   std::string         init_pose_from_topic;
 
@@ -76,6 +77,7 @@ CLaserOdometry2DNode::CLaserOdometry2DNode() :
   pn.param<std::string>("odom_topic", odom_topic, "/odom_rf2o");
   pn.param<std::string>("base_frame_id", base_frame_id, "/base_link");
   pn.param<std::string>("odom_frame_id", odom_frame_id, "/odom");
+  pn.param<std::string>("laser_frame_id", laser_frame_id, "/laser");
   pn.param<bool>("publish_tf", publish_tf, true);
   pn.param<std::string>("init_pose_from_topic", init_pose_from_topic, "/base_pose_ground_truth");
   pn.param<double>("freq",freq,10.0);
@@ -123,12 +125,16 @@ bool CLaserOdometry2DNode::setLaserPoseFromTf()
   transform.setIdentity();
   try
   {
-    tf_listener.lookupTransform(base_frame_id, last_scan.header.frame_id, ros::Time(0), transform);
+    ROS_INFO("Waiting for transform from %s to %s", base_frame_id.c_str(), laser_frame_id.c_str());
+    tf_listener.waitForTransform(base_frame_id, laser_frame_id, ros::Time::now(), ros::Duration(10.0));
+    tf_listener.lookupTransform(base_frame_id, laser_frame_id, ros::Time(0), transform);
     retrieved = true;
+    ROS_INFO("Received Transform from %s to %s successfully", base_frame_id.c_str(), laser_frame_id.c_str());
   }
   catch (tf::TransformException &ex)
   {
     ROS_ERROR("%s",ex.what());
+    ROS_ERROR("Failed to recieve transform from base to laser!!");
     ros::Duration(1.0).sleep();
     retrieved = false;
   }
@@ -189,6 +195,12 @@ void CLaserOdometry2DNode::LaserCallBack(const sensor_msgs::LaserScan::ConstPtr&
 {
   if (GT_pose_initialized)
   {
+    if (last_scan.header.frame_id.size() !=0 && laser_frame_id.compare(last_scan.header.frame_id) != 0)
+    {
+      ROS_ERROR("Laser frame_id set in launch file (%s) different from laser scan \
+                 ROS message frame_id (%s)", laser_frame_id.c_str(), last_scan.header.frame_id.c_str());
+    }
+
     //Keep in memory the last received laser_scan
     last_scan = *new_scan;
     current_scan_time = last_scan.header.stamp;

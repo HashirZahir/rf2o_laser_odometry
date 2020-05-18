@@ -19,7 +19,8 @@
     <param name="odom_topic" value="/odom_rf2o" />              # topic where tu publish the odometry estimations
     <param name="publish_tf" value="false" />                   # wheter or not to publish the tf::transform (base->odom)
     <param name="base_frame_id" value="/base_link"/>            # frame_id (tf) of the mobile robot base. A tf transform from the laser_frame to the base_frame is mandatory
-    <param name="odom_frame_id" value="/odom" />                # frame_id (tf) to publish the odometry estimations    
+    <param name="odom_frame_id" value="/odom" />                # frame_id (tf) to publish the odometry estimations
+    <param name="laser_frame_id" value="laser" />              # frame_id (tf) of the laser scan message from robot. Used to calculate inverse to get odom from base_link instead of laser frame
     <param name="init_pose_from_topic" value="/base_pose_ground_truth" /> # (Odom topic) Leave empty to start at point (0,0)
     <param name="freq" value="6.0"/>                            # Execution frequency.
     <param name="verbose" value="true" />                       # verbose
