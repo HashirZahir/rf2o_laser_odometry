@@ -55,7 +55,7 @@ void CLaserOdometry2D::init(const sensor_msgs::LaserScan& scan,
                             const geometry_msgs::Pose& initial_robot_pose)
 {
   //Got an initial scan laser, obtain its parametes
-  ROS_INFO_COND(verbose, "[rf2o] Got first Laser Scan .... Configuring node");
+  ROS_INFO("[rf2o] Got first Laser Scan .... Configuring node");
 
   width = scan.ranges.size();    // Num of samples (size) of the scan laser
 
